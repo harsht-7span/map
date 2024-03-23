@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="./leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css"
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <style>
+      #map {
+        position: absolute;
+        inset: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="./leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script>
+      var map = L.map("map").setView([0, 0], 10);
+
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+
+      //   navigator.geolocation.watchPosition(success, error);
+      navigator.geolocation.watchPosition(success, error);
+
+      let marker, circle, zoomed;
+
+      function success(pos) {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const accuracy = pos.coords.accuracy;
+
+        if (marker) {
+          map.removeLayer(marker);
+          map.removeLayer(circle);
+        }
+        marker = L.marker([lat, lng], { accuracy }).addTo(map);
+        circle = L.circle([lat, lng], { radius: accuracy }).addTo(map);
+
+        // var popup = L.popup([lat, lng], {
+        //   content: "<p>Ha<br />Idhar Idhar!!.</p>",
+        // }).openOn(map);
+        // when reload it will Bound at current location
+
+        if (!zoomed) {
+          zoomed = map.fitBounds(circle.getBounds());
+        }
+
+        // L.Routing.control({
+        //   waypoints: [L.latLng(lat, lng), L.latLng(23.0724744, 72.5352601)],
+        //   routeWhileDragging: true,
+        // }).addTo(map);
+
+        map.setView([lat, lng]);
+      }
+
+      function error(err) {
+        if (err.code === 1) {
+          alert("please allow loaction");
+        } else {
+          alert("Cannot get current location");
+        }
+      }
+    </script>
+  </body>
+</html>
